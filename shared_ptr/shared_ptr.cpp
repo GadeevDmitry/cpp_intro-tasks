@@ -4,6 +4,6 @@
 
 int main()
 {
-    shared_ptr<int> ptr = shared_ptr<int>::make_shared(5);
+    shared_ptr<int> ptr = make_shared<int>(5);
     printf("%p\n", &ptr);
 }
