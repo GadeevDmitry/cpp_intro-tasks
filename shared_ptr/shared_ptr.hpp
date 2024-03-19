@@ -6,26 +6,30 @@
 
 //==================================================================================================
 
-namespace detail
+template <class T>
+class shared_ptr
 {
-    template <class T>
-    struct default_deleter_t
+// types
+private:
+    template <bool = std::is_array_v<T>>
+    struct default_deleter_t;
+
+    template <>
+    struct default_deleter_t<false>
     {
         void operator() (T *elem) { delete elem; }
     };
 
-    template <class T>
-    struct default_deleter_t<T[]>
+    template <>
+    struct default_deleter_t<true>
     {
         void operator() (T *elem) { delete[] elem; }
     };
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    template <class T>
     using elem_t = std::remove_extent_t<T>;
 
-    template <class T>
     class control_block_api
     {
     // member functions
@@ -35,7 +39,7 @@ namespace detail
         {}
 
         virtual ~control_block_api() {};
-        virtual elem_t<T> *get_data() const = 0;
+        virtual elem_t *get_data() const = 0;
 
         void   inc_cnt()       { cnt++; }
         void   dec_cnt()       { cnt--; }
@@ -48,106 +52,54 @@ namespace detail
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    template <class T>
-    class single_control_block_t: public control_block_api<T>
+    template <class = std::enable_if<!std::is_array_v<T>>>
+    class single_control_block_t: public control_block_api
     {
-    // assert
-        static_assert(!std::is_array_v<T>);
-
     // member functions
     public:
-        template <class ...Args>
-        single_control_block_t(Args&&... args);
+        template <class... Args>
+        single_control_block_t(Args&&... args):
+        control_block_api(),
+        data(std::forward(args)...)
+        {}
 
-        virtual ~single_control_block_t() override;
-        virtual elem_t<T> *get_data() const override;
+        virtual ~single_control_block_t() override {}
+        virtual elem_t *get_data() const  override { return (elem_t *) &data; }
 
     // member data
     private:
         T data;
     };
 
-//--------------------------------------------------------------------------------------------------
-
-    template <class T>
-    template <class... Args>
-    single_control_block_t<T>::single_control_block_t(Args&&... args):
-    control_block_api<T>(),
-    data(std::forward(args)...)
-    {}
-
-//--------------------------------------------------------------------------------------------------
-
-    template <class T>
-    single_control_block_t<T>::~single_control_block_t()
-    {}
-
-//--------------------------------------------------------------------------------------------------
-
-    template <class T>
-    elem_t<T> *single_control_block_t<T>::get_data() const
-    {
-        return (elem_t<T> *) &data;
-    }
-
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    template <class T, template <class> class Deleter = default_deleter_t>
-    class separate_control_block_t: public control_block_api<T>
+    template <class Deleter = default_deleter_t<>>
+    class separate_control_block_t: public control_block_api
     {
     // member functions
     public:
-        separate_control_block_t(elem_t<T> *data);
-        separate_control_block_t(elem_t<T> *data, Deleter<T> del);
+        separate_control_block_t(elem_t *data_):
+        control_block_api(),
+        data(data_),
+        deleter()
+        {}
 
-        virtual ~separate_control_block_t() override;
-        virtual elem_t<T> *get_data() const override;
+        separate_control_block_t(elem_t *data_, Deleter del):
+        control_block_api(),
+        data(data_),
+        deleter(del)
+        {}
+
+        virtual ~separate_control_block_t() override { deleter(data); }
+        virtual elem_t *get_data() const    override { return data; }
 
     private:
-        elem_t <T> *data;
-        Deleter<T>  deleter;
+        elem_t *data;
+        Deleter deleter;
     };
-
-//--------------------------------------------------------------------------------------------------
-
-    template <class T, template <class> class Deleter>
-    separate_control_block_t<T, Deleter>::separate_control_block_t(elem_t<T> *data_):
-    control_block_api<T>(),
-    data(data_),
-    deleter()
-    {}
-
-//--------------------------------------------------------------------------------------------------
-
-    template <class T, template <class> class Deleter>
-    separate_control_block_t<T, Deleter>::separate_control_block_t(elem_t<T> *data_, Deleter<T> del):
-    control_block_api<T>(),
-    data(data_),
-    deleter(del)
-    {}
-
-//--------------------------------------------------------------------------------------------------
-
-    template <class T, template <class> class Deleter>
-    separate_control_block_t<T, Deleter>::~separate_control_block_t()
-    {
-        deleter(data);
-    }
-
-//--------------------------------------------------------------------------------------------------
-
-    template <class T, template <class> class Deleter>
-    elem_t<T> *separate_control_block_t<T, Deleter>::get_data() const
-    {
-        return data;
-    }
-};
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-template <class T>
-class shared_ptr
-{
 // friends
     template <class U, class... Args>
     friend shared_ptr<U> make_shared(Args&&... args);
@@ -155,33 +107,33 @@ class shared_ptr
 // member functions
 public:
     shared_ptr(std::nullptr_t data = nullptr);
-    shared_ptr(detail::elem_t<T> *elem);
+    shared_ptr(elem_t *elem);
     shared_ptr(const shared_ptr & that);
     shared_ptr(      shared_ptr &&that);
 
-    template <template <class> class Deleter = detail::default_deleter_t>
-    shared_ptr(detail::elem_t<T> *elem, Deleter<T> del);
+    template <template <class> class Deleter>
+    shared_ptr(elem_t *elem, Deleter<T> del);
 
     shared_ptr &operator =(const shared_ptr & that);
     shared_ptr &operator =(      shared_ptr &&that);
 
    ~shared_ptr();
 
-    detail::elem_t<T> *get          ()                 const;
-    bool               unique       ()                 const;
-    size_t             use_count    ()                 const;
+    elem_t *get          ()                 const;
+    bool    unique       ()                 const;
+    size_t  use_count    ()                 const;
 
-    detail::elem_t<T> &operator *   ()                 const;
-    detail::elem_t<T> *operator ->  ()                 const;
-    detail::elem_t<T> &operator []  (const size_t idx) const;
-                       operator bool()                 const;
+    elem_t &operator *   ()                 const;
+    elem_t *operator ->  ()                 const;
+    elem_t &operator []  (const size_t idx) const;
+            operator bool()                 const;
 
 private:
-    explicit shared_ptr(detail::control_block_api<T> *data);
+    explicit shared_ptr(control_block_api *data);
 
 // member data
 private:
-    detail::control_block_api<T> *data;
+    control_block_api *data;
 };
 
 //--------------------------------------------------------------------------------------------------
@@ -194,8 +146,8 @@ data(data_)
 //--------------------------------------------------------------------------------------------------
 
 template <class T>
-shared_ptr<T>::shared_ptr(detail::elem_t<T> *elem):
-shared_ptr(elem, detail::default_deleter_t<T>())
+shared_ptr<T>::shared_ptr(elem_t *elem):
+data(new separate_control_block_t(elem))
 {}
 
 //--------------------------------------------------------------------------------------------------
@@ -220,8 +172,8 @@ data(that.data)
 
 template <class T>
 template <template <class> class Deleter>
-shared_ptr<T>::shared_ptr(detail::elem_t<T> *elem, Deleter<T> del):
-data(new detail::separate_control_block_t<T, Deleter>(elem, del))
+shared_ptr<T>::shared_ptr(elem_t *elem, Deleter<T> del):
+data(new separate_control_block_t<Deleter<T>>(elem, del))
 {}
 
 //--------------------------------------------------------------------------------------------------
@@ -260,7 +212,7 @@ shared_ptr<T>::~shared_ptr()
 //--------------------------------------------------------------------------------------------------
 
 template <class T>
-detail::elem_t<T> *shared_ptr<T>::get() const
+typename shared_ptr<T>::elem_t *shared_ptr<T>::get() const
 {
     if (!data) return nullptr;
     return data->get_data();
@@ -287,7 +239,7 @@ size_t shared_ptr<T>::use_count() const
 //--------------------------------------------------------------------------------------------------
 
 template <class T>
-detail::elem_t<T> &shared_ptr<T>::operator *() const
+typename shared_ptr<T>::elem_t &shared_ptr<T>::operator *() const
 {
     return *(data->get_data());
 }
@@ -295,7 +247,7 @@ detail::elem_t<T> &shared_ptr<T>::operator *() const
 //--------------------------------------------------------------------------------------------------
 
 template <class T>
-detail::elem_t<T> *shared_ptr<T>::operator ->() const
+typename shared_ptr<T>::elem_t *shared_ptr<T>::operator ->() const
 {
     if (!data) return nullptr;
     return data->get_data();
@@ -304,7 +256,7 @@ detail::elem_t<T> *shared_ptr<T>::operator ->() const
 //--------------------------------------------------------------------------------------------------
 
 template <class T>
-detail::elem_t<T> &shared_ptr<T>::operator [](const size_t idx) const
+typename shared_ptr<T>::elem_t &shared_ptr<T>::operator [](const size_t idx) const
 {
     return get()[idx];
 }
@@ -320,7 +272,7 @@ shared_ptr<T>::operator bool() const
 //--------------------------------------------------------------------------------------------------
 
 template <class T>
-shared_ptr<T>::shared_ptr(detail::control_block_api<T> *data_):
+shared_ptr<T>::shared_ptr(control_block_api *data_):
 data(data_)
 {}
 
@@ -331,7 +283,7 @@ shared_ptr<T> make_shared(Args&&... args)
 {
     static_assert(!std::is_array_v<T>);
 
-    detail::single_control_block_t<T> *data = new detail::single_control_block_t<T>(std::forward(args)...);
+    typename shared_ptr<T>::single_control_block_t *data = new typename shared_ptr<T>::single_control_block_t(std::forward(args)...);
     return shared_ptr<T>(data);
 }
 
