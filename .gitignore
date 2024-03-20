@@ -1,4 +1,5 @@
 shared_ptr/shared
 move_ctor/log_int
+function/function
 
 *.dot
