@@ -1,4 +1,4 @@
-CC     := g++
+CC     := g++-12
 CFLAGS := -std=c++20
 
 .PHONY: all
