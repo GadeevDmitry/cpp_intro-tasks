@@ -11,8 +11,9 @@ build:
 
 .PHONY: run
 run:
-	./vector
+	./vector > log.txt
 
 .PHONY: clean
 clean:
 	rm -f vector
+	rm -f log.txt
