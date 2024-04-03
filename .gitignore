@@ -4,5 +4,7 @@ shared_ptr/shared
 vector/vector
 
 *.dot
-.clangd
+log.txt
 compile_commands.json
+.clangd
+.cache/
