@@ -2,6 +2,7 @@
 all:
 	cd function   && $(MAKE) build
 	cd move_ctor  && $(MAKE) build
+	cd sfinae     && $(MAKE) build
 	cd shared_ptr && $(MAKE) build
 	cd vector     && $(MAKE) build
 
@@ -9,6 +10,7 @@ all:
 clean:
 	cd function   && $(MAKE) clean
 	cd move_ctor  && $(MAKE) clean
+	cd sfinae     && $(MAKE) clean
 	cd shared_ptr && $(MAKE) clean
 	cd vector     && $(MAKE) clean
 

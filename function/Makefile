@@ -1,5 +1,5 @@
 CC     := g++-12
-CFLAGS := -std=c++20
+CFLAGS := -std=c++20 -I../include/
 
 .PHONY: all
 all: build run
