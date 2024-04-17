@@ -163,17 +163,17 @@ static void test_ctors()
     PRINT_TEST_HEADER;
 
     {
-        vector<heavy_t> vec;
+        my_std::vector<heavy_t> vec;
         print_subtest_header("vector()");
         std::cout << vec;
     }
     {
-        vector<heavy_t> vec(3, heavy_t{1, 2, 3, 4, 5});
+        my_std::vector<heavy_t> vec(3, heavy_t{1, 2, 3, 4, 5});
         print_subtest_header("vector(size_type count, const_reference value)");
         std::cout << vec;
     }
     {
-        vector<heavy_t> vec(4);
+        my_std::vector<heavy_t> vec(4);
         print_subtest_header("vector(size_type count)");
         std::cout << vec;
     }
@@ -185,24 +185,24 @@ static void test_ctors()
             {1, 2, 3, 4},
             {1, 2, 3, 4, 5}};
 
-        vector<heavy_t> vec_original(std_vec.begin(), std_vec.end());
+        my_std::vector<heavy_t> vec_original(std_vec.begin(), std_vec.end());
         print_subtest_header("vector(InputIt first, InputIt last)");
         std::cout << vec_original;
 
-        vector<heavy_t> vec_copy(vec_original);
+        my_std::vector<heavy_t> vec_copy(vec_original);
         print_subtest_header("vector(const vector &that)");
         std::cout << "original " << vec_original;
         print_thin_separator();
         std::cout << "copy " << vec_copy;
 
-        vector<heavy_t> vec_move(std::move(vec_original));
+        my_std::vector<heavy_t> vec_move(std::move(vec_original));
         print_subtest_header("vector(vector &&that)");
         std::cout << "original " << vec_original;
         print_thin_separator();
         std::cout << "move " << vec_move;
     }
     {
-        vector<heavy_t> vec{
+        my_std::vector<heavy_t> vec{
             {1, 2, 3, 4, 5, 6},
             {1, 2, 3, 4, 5, 6, 7},
             {1, 2, 3, 4, 5, 6, 7, 8}};
@@ -218,18 +218,18 @@ static void test_assign_operators()
     PRINT_TEST_HEADER;
 
     {
-        vector<heavy_t> vec_zero;
+        my_std::vector<heavy_t> vec_zero;
 
-        vector<heavy_t> vec_first{
+        my_std::vector<heavy_t> vec_first{
             {1},
             {1, 2, 3, 4, 5}};
 
-        vector<heavy_t> vec_second{
+        my_std::vector<heavy_t> vec_second{
             {2},
             {1, 2, 3, 4, 5},
             {6, 7, 8}};
 
-        vector<heavy_t> vec_third{
+        my_std::vector<heavy_t> vec_third{
             {3},
             {1, 2, 3, 4, 5},
             {6, 7, 8},
@@ -283,8 +283,8 @@ static void test_assign()
     PRINT_TEST_HEADER;
 
     {
-        vector<heavy_t> vec_original;
-        vector<heavy_t> vec_duplicate(6, heavy_t{1, 2, 3, 4});
+        my_std::vector<heavy_t> vec_original;
+        my_std::vector<heavy_t> vec_duplicate(6, heavy_t{1, 2, 3, 4});
 
         std::cout << "original " << vec_original;
         print_thin_separator();
@@ -316,7 +316,7 @@ static void test_reserve()
     PRINT_TEST_HEADER;
 
     {
-        vector<heavy_t> vec{{1}, {2, 3}, {4, 5, 6}};
+        my_std::vector<heavy_t> vec{{1}, {2, 3}, {4, 5, 6}};
         std::cout << vec;
 
         vec.reserve(3 * vec.capacity());
@@ -336,7 +336,7 @@ static void test_clear()
     PRINT_TEST_HEADER;
 
     {
-        vector<heavy_t> vec{{1}, {2, 3}, {4, 5, 6}};
+        my_std::vector<heavy_t> vec{{1}, {2, 3}, {4, 5, 6}};
         std::cout << vec;
 
         vec.clear();
@@ -352,7 +352,7 @@ static void test_insert_emplace_erase()
     PRINT_TEST_HEADER;
 
     {
-        vector<heavy_t> vec;
+        my_std::vector<heavy_t> vec;
         std::cout << vec;
 
         vec.insert(vec.begin(), heavy_t{0, 0, 0, 0, 0, 0});
@@ -401,7 +401,7 @@ static void test_push_emplace_pop_back()
     PRINT_TEST_HEADER;
 
     {
-        vector<heavy_t> vec;
+        my_std::vector<heavy_t> vec;
         std::cout << vec;
 
         for (int i = 0; i < 3; ++i)
@@ -434,7 +434,7 @@ static void test_resize()
     PRINT_TEST_HEADER;
 
     {
-        vector<heavy_t> vec;
+        my_std::vector<heavy_t> vec;
         std::cout << vec;
 
         vec.resize(10);
@@ -462,7 +462,7 @@ static void test_iterators()
     PRINT_TEST_HEADER;
 
     {
-        vector<heavy_t> vec{
+        my_std::vector<heavy_t> vec{
             {1, 2, 3},
             {4, 5, 6},
             {7, 8, 9}};

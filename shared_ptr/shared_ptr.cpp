@@ -20,7 +20,7 @@ struct shared_t
 
 int main()
 {
-    shared_ptr<shared_t[]> ptr(new shared_t[5]);
+    my_std::shared_ptr<shared_t[]> ptr(new shared_t[5]);
 
     for (int i = 0; i < 5; ++i)
     {
