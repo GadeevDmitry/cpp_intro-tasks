@@ -83,6 +83,9 @@ namespace my_std
     template <bool Cond, class True, class False>
     struct conditional;
 
+    template <bool Cond, class True, class False>
+    using conditional_t = typename conditional<Cond, True, False>::type;
+
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // combining type traits
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -139,6 +142,9 @@ namespace my_std
 
     #undef IS_VOID
 
+    template <class T>
+    constexpr bool is_void_v = is_void<T>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     namespace detail
@@ -173,6 +179,9 @@ namespace my_std
     template <class T>
     struct is_integral: public detail::is_integral_helper<remove_cv_t<T>>::type {};
 
+    template <class T>
+    constexpr bool is_integral_v = is_integral<T>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     namespace detail
@@ -193,6 +202,9 @@ namespace my_std
 
     template <class T>
     struct is_floating_point: public detail::is_floating_point_helper<remove_cv_t<T>>::type {};
+
+    template <class T>
+    constexpr bool is_floating_point_v = is_floating_point<T>::value;
 
     //--------------------------------------------------------------------------------------------------
 
@@ -216,6 +228,9 @@ namespace my_std
     template <class T, size_t N>
     struct is_array<T[N]>: public true_type {};
 
+    template <class T>
+    constexpr bool is_array_v = is_array<T>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     namespace detail
@@ -229,6 +244,9 @@ namespace my_std
 
     template <class T>
     struct is_pointer: public detail::is_pointer_helper<remove_cv_t<T>>::type {}; 
+
+    template <class T>
+    constexpr bool is_pointer_v = is_pointer<T>::value;
 
     //--------------------------------------------------------------------------------------------------
 
@@ -244,6 +262,9 @@ namespace my_std
     template <class T>
     struct is_null_pointer: public detail::is_null_pointer_helper<remove_cv_t<T>>::type {};
 
+    template <class T>
+    constexpr bool is_null_pointer_v = is_null_pointer<T>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     namespace detail
@@ -258,6 +279,9 @@ namespace my_std
     template <class T>
     struct is_member_object_pointer: public detail::is_member_object_pointer_helper<remove_cv_t<T>>::type {};
 
+    template <class T>
+    constexpr bool is_member_object_pointer_v = is_member_object_pointer<T>::value;
+
     namespace detail
     {
         template <class T>
@@ -270,6 +294,9 @@ namespace my_std
     template <class T>
     struct is_member_function_pointer: public detail::is_member_function_pointer_helper<remove_cv_t<T>>::type {};
 
+    template <class T>
+    constexpr bool is_member_function_pointer_v = is_member_function_pointer<T>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     template <class T>
@@ -279,10 +306,16 @@ namespace my_std
     struct is_lvalue_reference<T&>: public true_type {};
 
     template <class T>
+    constexpr bool is_lvalue_reference_v = is_lvalue_reference<T>::value;
+
+    template <class T>
     struct is_rvalue_reference: public false_type {};
 
     template <class T>
     struct is_rvalue_reference<T&&>: public true_type {};
+
+    template <class T>
+    constexpr bool is_rvalue_reference_v = is_rvalue_reference<T>::value;
 
     //--------------------------------------------------------------------------------------------------
 
@@ -290,15 +323,27 @@ namespace my_std
     struct is_enum: public bool_constant<__is_enum(T)> {};
 
     template <class T>
+    constexpr bool is_enum_v = is_enum<T>::value;
+
+    template <class T>
     struct is_class: public bool_constant<__is_class(T)> {};
 
     template <class T>
+    constexpr bool is_class_v = is_class<T>::value;
+
+    template <class T>
     struct is_union: public bool_constant<__is_union(T)> {};
+
+    template <class T>
+    constexpr bool is_union_v = is_union<T>::value;
 
     //--------------------------------------------------------------------------------------------------
 
     template <class T>
     struct is_function: public bool_constant<!is_const<const T>::value && !is_reference<T>::value> {};
+
+    template <class T>
+    constexpr bool is_function_v = is_function<T>::value;
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // composite type categories
@@ -316,6 +361,9 @@ namespace my_std
 
     #undef IS_REFERENCE
 
+    template <class T>
+    constexpr bool is_reference_v = is_reference<T>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     namespace detail
@@ -330,12 +378,18 @@ namespace my_std
     template <class T>
     struct is_member_pointer: public detail::is_member_pointer_helper<remove_cv_t<T>>::type {};
 
+    template <class T>
+    constexpr bool is_member_pointer_v = is_member_pointer<T>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     template <class T>
     struct is_arithmetic: public bool_constant<
         is_integral      <T>::value ||
         is_floating_point<T>::value> {};
+
+    template <class T>
+    constexpr bool is_arithmetic_v = is_arithmetic<T>::value;
 
     //--------------------------------------------------------------------------------------------------
 
@@ -344,6 +398,9 @@ namespace my_std
         is_arithmetic  <T>::value ||
         is_void        <T>::value ||
         is_null_pointer<T>::value> {};
+
+    template <class T>
+    constexpr bool is_fundamental_v = is_fundamental<T>::value;
 
     //--------------------------------------------------------------------------------------------------
 
@@ -355,6 +412,9 @@ namespace my_std
         is_member_pointer<T>::value ||
         is_null_pointer  <T>::value> {};
 
+    template <class T>
+    constexpr bool is_scalar_v = is_scalar<T>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     template <class T>
@@ -363,11 +423,17 @@ namespace my_std
         is_reference<T>::value ||
         is_void     <T>::value)> {};
 
+    template <class T>
+    constexpr bool is_object_v = is_object<T>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     template <class T>
     struct is_compound: public bool_constant<!
         is_fundamental<T>::value> {};
+
+    template <class T>
+    constexpr bool is_compound_v = is_compound<T>::value;
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // other type properties
@@ -385,12 +451,18 @@ namespace my_std
     template <class T>
     struct is_signed: public detail::is_signed_helper<T>::type {};
 
+    template <class T>
+    constexpr bool is_signed_v = is_signed<T>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     template <class T>
     struct is_unsigned: public bool_constant<
         is_arithmetic<T>::value &&
        !is_signed    <T>::value>::type {};
+
+    template <class T>
+    constexpr bool is_unsigned_v = is_unsigned<T>::value;
 
     //--------------------------------------------------------------------------------------------------
 
@@ -400,6 +472,9 @@ namespace my_std
     template <class T>
     struct is_const<const T>: public true_type {};
 
+    template <class T>
+    constexpr bool is_const_v = is_const<T>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     template <class T>
@@ -408,60 +483,96 @@ namespace my_std
     template <class T>
     struct is_volatile<volatile T>: public true_type {};
 
+    template <class T>
+    constexpr bool is_volatile_v = is_volatile<T>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     template <class T>
     struct is_aggregate: public bool_constant<__is_aggregate(remove_cv_t<T>)> {};
+
+    template <class T>
+    constexpr bool is_aggregate_v = is_aggregate<T>::value;
 
     //--------------------------------------------------------------------------------------------------
 
     template <class T>
     struct is_trivial: public bool_constant<__is_trivial(T)> {};
 
+    template <class T>
+    constexpr bool is_trivial_v = is_trivial<T>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     template <class T>
     struct is_trivially_copyable: public bool_constant<__is_trivially_copyable(T)> {};
+
+    template <class T>
+    constexpr bool is_trivially_copyable_v = is_trivially_copyable<T>::value;
 
     //--------------------------------------------------------------------------------------------------
 
     template <class T>
     struct is_standard_layout: public bool_constant<__is_standard_layout(T)> {};
 
+    template <class T>
+    constexpr bool is_standard_layout_v = is_standard_layout<T>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     template <class T>
     struct is_empty: public bool_constant<__is_empty(T)> {};
+
+    template <class T>
+    constexpr bool is_empty_v = is_empty<T>::value;
 
     //--------------------------------------------------------------------------------------------------
 
     template <class T>
     struct is_polymorphic: public bool_constant<__is_polymorphic(T)> {};
 
+    template <class T>
+    constexpr bool is_polymorphic_v = is_polymorphic<T>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     template <class T>
     struct is_abstract: public bool_constant<__is_abstract(T)> {};
+
+    template <class T>
+    constexpr bool is_abstract_v = is_abstract<T>::value;
 
     //--------------------------------------------------------------------------------------------------
 
     template <class T>
     struct is_final: public bool_constant<__is_final(T)> {};
 
+    template <class T>
+    constexpr bool is_final_v = is_final<T>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     template <class T>
     struct has_virtual_destructor: public bool_constant<__has_virtual_destructor(T)> {};
+
+    template <class T>
+    constexpr bool has_virtual_destructor_v = has_virtual_destructor<T>::value;
 
     //--------------------------------------------------------------------------------------------------
 
     template <class T>
     struct has_unique_object_representations: public bool_constant<__has_unique_object_representations(remove_cv_t<remove_all_extents_t<T>>)> {};
 
+    template <class T>
+    constexpr bool has_unique_object_representations_v = has_unique_object_representations<T>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     template <class T>
     struct alignment_of: public integral_constant<size_t, alignof(T)> {};
+
+    template <class T>
+    constexpr bool alignment_of_v = alignment_of<T>::value;
 
     //--------------------------------------------------------------------------------------------------
 
@@ -473,6 +584,9 @@ namespace my_std
 
     template <class T, size_t N>
     struct rank<T[N]>: public integral_constant<size_t, rank<T>::value + 1> {};
+
+    template <class T>
+    constexpr bool rank_v = rank<T>::value;
 
     //--------------------------------------------------------------------------------------------------
 
@@ -490,6 +604,9 @@ namespace my_std
 
     template <class T, size_t N>
     struct extent<T[N], 0>: public integral_constant<size_t, N> {};
+
+    template <class T, size_t IDX = 0>
+    constexpr bool extent_v = extent<T, IDX>::value;
 
     //--------------------------------------------------------------------------------------------------
 
@@ -517,7 +634,13 @@ namespace my_std
     using is_invocable = std::is_invocable<T, Args...>;
 
     template <class T, class... Args>
+    constexpr bool is_invocable_v = is_invocable<T, Args...>::value;
+
+    template <class T, class... Args>
     using is_nothrow_invocable = std::is_nothrow_invocable<T, Args...>;
+
+    template <class T, class... Args>
+    constexpr bool is_nothrow_invocable_v = is_nothrow_invocable<T, Args...>::value;
 
     //--------------------------------------------------------------------------------------------------
 
@@ -525,7 +648,13 @@ namespace my_std
     using is_invocable_r = std::is_invocable_r<Ret, T, Args...>;
 
     template <class Ret, class T, class... Args>
+    constexpr bool is_invocable_r_v = is_invocable_r<Ret, T, Args...>::value;
+
+    template <class Ret, class T, class... Args>
     using is_nothrow_invocable_r = std::is_nothrow_invocable_r<Ret, T, Args...>;
+
+    template <class Ret, class T, class... Args>
+    constexpr bool is_nothrow_invocable_r_v = is_nothrow_invocable_r<Ret, T, Args...>::value;
 
     //--------------------------------------------------------------------------------------------------
 
@@ -564,9 +693,12 @@ namespace my_std
 
     //--------------------------------------------------------------------------------------------------
 
-    #define IS_CONSTRUCTIBLE(trait)     \
-    template <class T, class... Args>   \
-    struct trait##_constructible: public detail::trait##_constructible_helper<T, void, Args...>::type {};
+    #define IS_CONSTRUCTIBLE(trait)                                                                         \
+    template <class T, class... Args>                                                                       \
+    struct trait##_constructible: public detail::trait##_constructible_helper<T, void, Args...>::type {};   \
+                                                                                                            \
+    template <class T, class... Args>                                                                       \
+    constexpr bool trait##_constructible_v = trait##_constructible<T, Args...>::value;
 
     IS_CONSTRUCTIBLE(is)
     IS_CONSTRUCTIBLE(is_trivially)
@@ -576,9 +708,12 @@ namespace my_std
 
     //--------------------------------------------------------------------------------------------------
 
-    #define IS_DEFAULT_CONSTRUCTIBLE(trait) \
-    template <class T>                      \
-    struct trait##_default_constructible: public detail::trait##_constructible_helper<T, void>::type {};
+    #define IS_DEFAULT_CONSTRUCTIBLE(trait)                                                                 \
+    template <class T>                                                                                      \
+    struct trait##_default_constructible: public detail::trait##_constructible_helper<T, void>::type {};    \
+                                                                                                            \
+    template <class T>                                                                                      \
+    constexpr bool trait##_default_constructible_v = trait##_default_constructible<T>::value;
 
     IS_DEFAULT_CONSTRUCTIBLE(is)
     IS_DEFAULT_CONSTRUCTIBLE(is_trivially)
@@ -588,9 +723,12 @@ namespace my_std
 
     //--------------------------------------------------------------------------------------------------
 
-    #define IS_COPY_CONSTRUCTIBLE(trait)    \
-    template <class T>                      \
-    struct trait##_copy_constructible: public detail::trait##_constructible_helper<T, void, add_lvalue_reference_t<const T>>::type {};
+    #define IS_COPY_CONSTRUCTIBLE(trait)                                                                                                \
+    template <class T>                                                                                                                  \
+    struct trait##_copy_constructible: public detail::trait##_constructible_helper<T, void, add_lvalue_reference_t<const T>>::type {};  \
+                                                                                                                                        \
+    template <class T>                                                                                                                  \
+    constexpr bool trait##_copy_constructible_v = trait##_copy_constructible<T>::value;
 
     IS_COPY_CONSTRUCTIBLE(is)
     IS_COPY_CONSTRUCTIBLE(is_trivially)
@@ -600,9 +738,12 @@ namespace my_std
 
     //--------------------------------------------------------------------------------------------------
 
-    #define IS_MOVE_CONSTRUCTIBLE(trait)    \
-    template <class T>                      \
-    struct trait##_move_constructible: public detail::trait##_constructible_helper<T, void, add_rvalue_reference_t<T>>::type {};
+    #define IS_MOVE_CONSTRUCTIBLE(trait)                                                                                            \
+    template <class T>                                                                                                              \
+    struct trait##_move_constructible: public detail::trait##_constructible_helper<T, void, add_rvalue_reference_t<T>>::type {};    \
+                                                                                                                                    \
+    template <class T>                                                                                                              \
+    constexpr bool trait##_move_constructible_v = trait##_move_constructible<T>::value;
 
     IS_MOVE_CONSTRUCTIBLE(is)
     IS_MOVE_CONSTRUCTIBLE(is_trivially)
@@ -637,9 +778,12 @@ namespace my_std
 
     //--------------------------------------------------------------------------------------------------
 
-    #define IS_ASSIGNABLE(trait)    \
-    template <class To, class From> \
-    struct trait##_assignable: public detail::trait##_assignable_helper<To, From>::type {};
+    #define IS_ASSIGNABLE(trait)                                                            \
+    template <class To, class From>                                                         \
+    struct trait##_assignable: public detail::trait##_assignable_helper<To, From>::type {}; \
+                                                                                            \
+    template <class To, class From>                                                         \
+    constexpr bool trait##_assignable_v = trait##_assignable<To, From>::value;
 
     IS_ASSIGNABLE(is)
     IS_ASSIGNABLE(is_trivially)
@@ -649,9 +793,12 @@ namespace my_std
 
     //--------------------------------------------------------------------------------------------------
 
-    #define IS_COPY_ASSIGNABLE(trait)   \
-    template <class T>                  \
-    struct trait##_copy_assignable: public detail::trait##_assignable_helper<add_lvalue_reference_t<T>, add_lvalue_reference_t<const T>>::type {};
+    #define IS_COPY_ASSIGNABLE(trait)                                                                                                               \
+    template <class T>                                                                                                                              \
+    struct trait##_copy_assignable: public detail::trait##_assignable_helper<add_lvalue_reference_t<T>, add_lvalue_reference_t<const T>>::type {};  \
+                                                                                                                                                    \
+    template <class T>                                                                                                                              \
+    constexpr bool trait##_copy_assignable_v = trait##_copy_assignable<T>::value;
 
     IS_COPY_ASSIGNABLE(is)
     IS_COPY_ASSIGNABLE(is_trivially)
@@ -661,9 +808,12 @@ namespace my_std
 
     //--------------------------------------------------------------------------------------------------
 
-    #define IS_MOVE_ASSIGNABLE(trait)   \
-    template <class T>                  \
-    struct trait##_move_assignable: public detail::trait##_assignable_helper<add_lvalue_reference_t<T>, add_rvalue_reference_t<T>>::type {};
+    #define IS_MOVE_ASSIGNABLE(trait)                                                                                                           \
+    template <class T>                                                                                                                          \
+    struct trait##_move_assignable: public detail::trait##_assignable_helper<add_lvalue_reference_t<T>, add_rvalue_reference_t<T>>::type {};    \
+                                                                                                                                                \
+    template <class T>                                                                                                                          \
+    constexpr bool trait##_move_assignable_v = trait##_move_assignable<T>::value;
 
     IS_MOVE_ASSIGNABLE(is)
     IS_MOVE_ASSIGNABLE(is_trivially)
@@ -743,9 +893,12 @@ namespace my_std
 
     //--------------------------------------------------------------------------------------------------
 
-    #define IS_DESTRUCTIBLE(trait)  \
-    template <class T>              \
-    struct trait##_destructible: public detail::trait##_destructible_helper<T>::type {};
+    #define IS_DESTRUCTIBLE(trait)                                                          \
+    template <class T>                                                                      \
+    struct trait##_destructible: public detail::trait##_destructible_helper<T>::type {};    \
+                                                                                            \
+    template <class T>                                                                      \
+    constexpr bool trait##_destructible_v = trait##_destructible<T>::value;
 
     IS_DESTRUCTIBLE(is)
     IS_DESTRUCTIBLE(is_trivially)
@@ -778,6 +931,9 @@ namespace my_std
     template <class T1, class T2>
     struct is_swappable_with: public detail::is_swappable_with_helper<T1, T2>::type {};
 
+    template <class T1, class T2>
+    constexpr bool is_swappable_with_v = is_swappable_with<T1, T2>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     namespace detail
@@ -805,6 +961,9 @@ namespace my_std
     template <class T1, class T2>
     struct is_nothrow_swappable_with: public detail::is_nothrow_swappable_with_helper<T1, T2>::type {};
 
+    template <class T1, class T2>
+    constexpr bool is_nothrow_swappable_with_v = is_nothrow_swappable_with<T1, T2>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     namespace detail
@@ -826,6 +985,9 @@ namespace my_std
 
     template <class T>
     struct is_swappable: public detail::is_swappable_helper<T>::type {};
+
+    template <class T>
+    constexpr bool is_swappable_v = is_swappable<T>::value;
 
     //--------------------------------------------------------------------------------------------------
 
@@ -849,6 +1011,9 @@ namespace my_std
     template <class T>
     struct is_nothrow_swappable: public detail::is_nothrow_swappable_helper<T>::type {};
 
+    template <class T>
+    constexpr bool is_nothrow_swappable_v = is_nothrow_swappable<T>::value;
+
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // relationships between types
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -859,10 +1024,16 @@ namespace my_std
     template <class T>
     struct is_same<T, T>: true_type {};
 
+    template <class T1, class T2>
+    constexpr bool is_same_v = is_same<T1, T2>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     template <class Base, class Derived>
     struct is_base_of: public bool_constant<__is_base_of(Base, Derived)> {};
+
+    template <class Base, class Derived>
+    constexpr bool is_base_of_v = is_base_of<Base, Derived>::value;
 
     //--------------------------------------------------------------------------------------------------
 
@@ -890,6 +1061,9 @@ namespace my_std
 
     template <class From, class To>
     struct is_convertible: public detail::is_convertible_helper<From, To>::type {};
+
+    template <class From, class To>
+    constexpr bool is_convertible_v = is_convertible<From, To>::value;
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // type construction
@@ -995,7 +1169,13 @@ namespace my_std
     using make_signed = std::make_signed<T>;
 
     template <class T>
+    using make_signed_t = typename make_signed<T>::type;
+
+    template <class T>
     using make_unsigned = std::make_unsigned<T>;
+
+    template <class T>
+    using make_unsigned_t = typename make_unsigned<T>::type;
 
     //--------------------------------------------------------------------------------------------------
 
@@ -1368,6 +1548,9 @@ namespace my_std
     template <>
     struct conjunction<>: public true_type {};
 
+    template <class... Bs>
+    constexpr bool conjunction_v = conjunction<Bs...>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     namespace detail
@@ -1391,10 +1574,16 @@ namespace my_std
     template <>
     struct disjunction<>: public false_type {};
 
+    template <class... Bs>
+    constexpr bool disjunction_v = disjunction<Bs...>::value;
+
     //--------------------------------------------------------------------------------------------------
 
     template <class B>
     struct negation: public bool_constant<!B::value> {};
+
+    template <class B>
+    constexpr bool negation_v = negation<B>::value;
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     // other utilities
