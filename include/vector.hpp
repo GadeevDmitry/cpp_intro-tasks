@@ -1,14 +1,14 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
-#include <iostream>
+#include "type_traits.hpp"
 #include <cassert>
 
 #define VERIFICATION_TEMPLATE_CLASS_INPUT_IT    \
 template <                                      \
     class InputIt,                              \
-    class = std::enable_if_t<                   \
-            std::is_base_of_v<std::input_iterator_tag, typename std::iterator_traits<InputIt>::iterator_category>>>
+    class = enable_if_t<                        \
+            is_base_of_v<std::input_iterator_tag, typename std::iterator_traits<InputIt>::iterator_category>>>
 
 #define VERIFICATION_TEMPLATE_CLASS_BIDIRECT_IT \
 template <                                      \
